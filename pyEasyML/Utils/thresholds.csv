@@ -1,0 +1,3 @@
+model,column_id,threshold
+0,DeepAutoencoder,37,0.8881313409878085
+1,DeepAutoencoder,58,5.342406793765903
