@@ -29,7 +29,7 @@ class Threshold():
             self.__value = value
         else:
             self.__value = self.__get()
-
+            
     def __load(self) -> pd.DataFrame:
         if exists(self.__THRESHOLD_DF_PATH):
             return pd.read_csv(self.__THRESHOLD_DF_PATH, index_col=0)
@@ -52,20 +52,25 @@ class Threshold():
                 return threshold.values[0]
 
     def __set(self, value: float) -> None:
+        self.__df = self.__load()
+        
         df = self.__df[(self.__df['model'] == self.__model) & (self.__df['column_id'] == self.__column_id)]
         if df.empty:
-            new_row = {'model': self.__model, 'column_id': self.__column_id, 'threshold': value}
-            self.__df = self.__df.append(new_row, ignore_index=True)
+            new_row = pd.DataFrame({'model': [self.__model], 'column_id': [self.__column_id], 'threshold': [value]})
+            self.__df = pd.concat([self.__df, new_row], ignore_index=True)
         else:
-            row = df[['threshold']]
-            threshold = row.values[0]
-            if threshold != value:
-                self.__df.loc[(self.__df['model'] == self.__model) & (self.__df['column_id'] == self.__column_id), 'threshold'] = value
+            row_index = df.index[0]
+            if self.__df.at[row_index, 'threshold'] != value:
+                self.__df.at[row_index, 'threshold'] = value
             else:
                 return
 
         self.__value = value
         self.__save()
+
+    def __mul__(self, value: float) -> None:
+        self.__value *= value
+        return self
 
     def __str__(self) -> str:
         return f'Threshold: {self.__value}'
