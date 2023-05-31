@@ -3,4 +3,7 @@ A machine learning framework that provides data preprocessing, feature selection
 
 (Initial phases of development)
 
+# Installation
+pip install pyEasyML
+
 https://pypi.org/project/pyEasyML/1.0.0/
