@@ -1,0 +1,17 @@
+#!/bin/bash
+
+python3 setup.py sdist
+
+cd dist/
+
+# Find the .tar.gz file in the current directory
+framework=$(find . -maxdepth 1 -type f -name "*.tar.gz")
+
+# Check if the .tar.gz file exists
+if [ -z "$framework" ]; then
+    echo "No .tar.gz file found in the current directory."
+    exit 1
+fi
+
+# Install the package using pip
+pip3 install "$framework"

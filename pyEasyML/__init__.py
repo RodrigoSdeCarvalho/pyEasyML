@@ -17,35 +17,30 @@ sys.path.append(os.path.join(script_dir))
 from Configs.Config import Config
 
 class Settings:
-    config = Config()
+    def __init__(self, client:str) -> None:
+        self._config = Config(client)
 
-    @staticmethod
-    def set_target_feature(target_feature:str) -> None:
-        config = Settings.config
+    def set_target_feature(self,target_feature:str) -> None:
+        config = self._config
         config.TARGET_FEATURE = target_feature
 
-    @staticmethod    
-    def set_selected_features(selected_features:list[str]) -> None:
-        config = Settings.config
+    def set_selected_features(self,selected_features:list[str]) -> None:
+        config = self._config
         config.SELECTED_FEATURES = selected_features
 
-    @staticmethod    
-    def set_random_state(random_state:int) -> None:
-        config = Settings.config
+    def set_random_state(self,random_state:int) -> None:
+        config = self._config
         config.RANDOM_STATE = random_state
 
-    @staticmethod    
-    def get_target_feature() -> str:
-        config = Settings.config
+    def get_target_feature(self) -> str:
+        config = self._config
         return config.TARGET_FEATURE
 
-    @staticmethod
-    def get_selected_features() -> list[str]:
-        config = Settings.config
+    def get_selected_features(self) -> list[str]:
+        config = self._config
         return config.SELECTED_FEATURES
 
-    @staticmethod
-    def get_random_state() -> int:
-        config = Settings.config
+    def get_random_state(self) -> int:
+        config = self._config
         return config.RANDOM_STATE
     

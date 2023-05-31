@@ -28,19 +28,27 @@ def singleton(cls):
 
 @singleton
 class Config():
-    def __init__(self) -> None:
-        self.__configs:dict[str, str] = {"client": "/home/rodrigo/Documents/Personal/test"}
+    def __init__(self, client:str) -> None:
+        self.__configs:dict[str, str] = self.__load_configs(client)
         self.__client:str = self.__configs['client']
         self.__SELECTED_FEATURES:list[str] = []
         self.__TARGET_FEATURE:str = "NOT DEFINED"
         self.__RANDOM_STATE:int = 0
 
-    def __load_configs(self) -> dict[str, str]:
-        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configs.json')
-        with open(json_path, 'r') as file:
-            configs = json.load(file)
-    
-        return configs
+    def __load_configs(self, client: str) -> dict[str, str]:
+        start = client
+
+        for tries in range(100):
+            json_path = os.path.join(start, 'configs.json')
+            if os.path.exists(json_path):
+                with open(json_path, 'r') as file:
+                    configs = json.load(file)
+                    return configs
+            else:
+                parent_dir = os.path.dirname(os.path.dirname(start))
+                start = parent_dir
+
+        return {'client': 'NOT DEFINED'}
 
     @property
     def SELECTED_FEATURES(self) -> list[str]:
