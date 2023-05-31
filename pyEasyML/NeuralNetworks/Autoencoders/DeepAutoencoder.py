@@ -22,10 +22,12 @@ from keras.models import Sequential
 from keras.callbacks import EarlyStopping
 from keras.layers import Input
 import numpy as np
+from keras import regularizers
 
 class DeepAutoencoder(AbstractANN):
     def __init__(self, 
                  inputs:int,
+                 layers_params:dict[str, Any],
                  encode_layers_kwargs:dict[str, Any],
                  decode_layers_kwargs:dict[str, Any],
                  optimizer:str="adam",
@@ -43,7 +45,8 @@ class DeepAutoencoder(AbstractANN):
             columns_id (int, optional): Id to save and load the model. Defaults to 0.
         """
         super().__init__(columns_id, target_id=0)
-        self._model = self._instantiate_model(inputs=inputs, 
+        self._model = self._instantiate_model(inputs=inputs,
+                                              layers_params=layers_params,
                                               encode_layers_kwargs=encode_layers_kwargs, 
                                               decode_layers_kwargs=decode_layers_kwargs,
                                               input_layer=input_layer,
@@ -52,7 +55,8 @@ class DeepAutoencoder(AbstractANN):
                                               loss=loss)
 
     def _instantiate_model(self,
-                           inputs:int, 
+                           inputs:int,
+                           layers_params:dict[str, Any],
                            encode_layers_kwargs:dict[str, Any], 
                            decode_layers_kwargs:dict[str, Any],
                            input_layer:Input,
@@ -66,7 +70,7 @@ class DeepAutoencoder(AbstractANN):
 
         # if the model is not found, it will be created. Gets the layers based on inputs and kwargs
         if layers is None and input_layer is None:
-            input_layer, layers = self.__get_autoencoder_layers(inputs, encode_layers_kwargs, decode_layers_kwargs)
+            input_layer, layers = self.__get_autoencoder_layers(inputs, layers_params, encode_layers_kwargs, decode_layers_kwargs)
 
         # creates the model
         autoencoder = Sequential()
@@ -83,7 +87,7 @@ class DeepAutoencoder(AbstractANN):
 
         return autoencoder
 
-    def __get_autoencoder_layers(self, inputs:int, encode_layers_kwargs:dict[str, Any], decode_layers_kwargs:dict[str, Any]) -> tuple[Input, DeepAutoencoderLayers]:
+    def __get_autoencoder_layers(self, inputs:int, layers_params:dict[str, Any], encode_layers_kwargs:dict[str, Any], decode_layers_kwargs:dict[str, Any]) -> tuple[Input, DeepAutoencoderLayers]:
         input_shape = (inputs,)
         num_features = np.prod(input_shape)
         latent_dim = num_features // 2
@@ -94,11 +98,23 @@ class DeepAutoencoder(AbstractANN):
         # Encoding Layers
         layers = DeepAutoencoderLayers()
 
-        # Adds the encoding layers
+        # Adds the encoding layers        
         units = num_features
+        layer_ctr = 0
         while units >= latent_dim:
+            layer_key = str(layer_ctr)
+            if layer_key == '0' and layer_key in list(layers_params.keys()):
+                layers.add(units=units, **layers_params[layer_key])
+                layer_ctr += 1
+                continue
+            
             units //= 2 # Determines the number of units for the next layer
-            layers.add(units=units, **encode_layers_kwargs)
+            if layer_key in list(layers_params.keys()):
+                layers.add(units=units, **layers_params[layer_key])
+            else:
+                layers.add(units=units, **encode_layers_kwargs)
+                
+            layer_ctr += 1
 
         # Sets the position of the first dropout layer
         dropout_pos = len(layers) // 2
@@ -106,10 +122,15 @@ class DeepAutoencoder(AbstractANN):
         # Adds the Decoding Layers
         units = layers.reverse()
         for unit in units:
-            layers.add(units=unit, **decode_layers_kwargs)
+            layer_key = str(layer_ctr)
+            if layer_key in list(layers_params.keys()):
+                layers.add(units=unit, **layers_params[layer_key])
+            else:
+                layers.add(units=unit, **decode_layers_kwargs)
+            layer_ctr += 1
 
         # Adds the dropout layers
-        layers.insert_at(index=dropout_pos, name="Dropout", rate=0.2)
+        layers.insert_at(index=dropout_pos, name="Dropout", rate=0.05)
         layers.insert_at(index=len(layers)-dropout_pos+1, name="Dropout", rate=0.2)
 
         # Output Layer

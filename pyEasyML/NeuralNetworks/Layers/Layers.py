@@ -5,7 +5,6 @@ sys.dont_write_bytecode = True
 
 script_dir = os.path.abspath(__file__)
 
-
 # Apagando o nome do arquivo e deixando apenas o diretorio.
 script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
 
