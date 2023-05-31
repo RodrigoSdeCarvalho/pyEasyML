@@ -15,14 +15,16 @@ sys.path.append(script_dir)
 
 from Classification.Models.AbstractModel import AbstractModel
 from sklearn.ensemble import RandomForestClassifier as RFC
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from Configs import Config
+from typing import Any
 
-class RandomForestClassifier(Model):
-    def __init__(self, columns:list[str] ) -> None:
-        super().__init__(columns)
+class RandomForestClassifier(AbstractModel):
+    def __init__(self) -> None:
+        super().__init__()
 
-    def _instantiate_model(self) -> RFC:
-        rf_model = RFC(n_estimators=100, max_depth=2, random_state=self._config.RANDOM_STATE)
+    def _instantiate_model(self, **params:dict[str, Any]) -> RFC:
+        rf_model = RFC(**params)
 
         return rf_model
+
+    def _get_params(self) -> dict:
+        return self._model.get_params()

@@ -21,7 +21,10 @@ class KNeighborsClassifier(AbstractModel):
     def __init__(self) -> None:
         super().__init__()
 
-    def _instantiate_model(self) -> KNN:
-        knn_model = KNN(n_neighbors=1)
+    def _instantiate_model(self, **params) -> KNN:
+        knn_model = KNN(**params)
 
         return knn_model
+    
+    def _get_params(self) -> dict:
+        return self._model.get_params()
