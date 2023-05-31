@@ -9,7 +9,6 @@ script_dir = os.path.abspath(__file__)
 script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
 
 os.chdir(script_dir)
-print(script_dir)
 sys.path.append(script_dir)
 
 import pandas as pd

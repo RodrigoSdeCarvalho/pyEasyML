@@ -119,7 +119,6 @@ class DataPreprocessor(Singleton):
             columns.remove(self._config.TARGET_FEATURE)
         else:
             X = dataset[columns]
-        print(self._config)
         Y = dataset[target_column]
 
         X_train, X_test, Y_train, Y_test = sklearn.model_selection.train_test_split(

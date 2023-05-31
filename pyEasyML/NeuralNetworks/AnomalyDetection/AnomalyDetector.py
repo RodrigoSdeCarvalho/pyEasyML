@@ -56,8 +56,7 @@ class AnomalyDetector:
         return columns_id
 
     def __get_model(self, model_name:str, **params:dict[str, Any]) -> AbstractANN:
-        model = Factory().create(model_name, **params)
-        model.columns_id = self._columns_id
+        model = Factory().create(model_name, columns_id=self._columns_id, **params)
         
         return model
 
@@ -88,23 +87,22 @@ class AnomalyDetector:
 
     def train(self, X_train:np.ndarray, re_train:bool=False, **fit_params:dict[str, Any]) -> bool:
         model_is_trained = self._verify_if_model_trained()
+
+        if not model_is_trained or re_train:
+            self._model.fit(X_train, **fit_params)
+
+            healthy_reconstrution = self._model.predict(X_train)
+            
+            for column_index in range(len(self._thresholds)):
+                self._thresholds[column_index].value = self.__reconstruction_mae_loss(original=X_train[:,column_index], reconstructed=healthy_reconstrution[:,column_index])
         
-        if model_is_trained and not re_train:
-            return True
-        elif not model_is_trained and not re_train:
-            raise Exception("Model not trained and re_train is False.")
-
-        self._model.fit(X_train, **fit_params)
-
-        healthy_reconstrution = self._model.predict(X_train)
-        for column_index in range(len(self._thresholds)):
-            self._thresholds[column_index].value = self.__reconstruction_mae_loss(original=X_train[:,column_index], reconstructed=healthy_reconstrution[:,column_index])
+        return True
         
     def _verify_if_model_trained(self) -> bool:
         columns_id_str = ColumnsToID().convert_columns_to_id(*self._columns)
         target_id_str = '0'
 
-        if exists(self._config.get_trained_models_path() + f'{self._model.__class__.__name__}_{columns_id_str}_{target_id_str}_model.sav'):
+        if exists(self._config.get_trained_models_path() + f'{self._model.__class__.__name__}{columns_id_str}{target_id_str}.h5'):
             return True
         else:
             False
@@ -120,7 +118,7 @@ class AnomalyDetector:
         
         return loss
 
-    def detect(self, dataset:np.ndarray, minimum_anomalous_vars:int=1) -> np.ndarray:
+    def detect(self, dataset:np.ndarray, minimum_anomalous_vars:int=1, threshold_factor:float=1.0) -> np.ndarray:
         reconstructed = self._model.predict(dataset)
 
         losses = []
@@ -130,7 +128,7 @@ class AnomalyDetector:
         vectorized_verify_if_is_anomaly = np.vectorize(self.__verify_if_is_anomaly)
         detections = []
         for loss, threshold in zip(losses, self._thresholds):
-            detection = vectorized_verify_if_is_anomaly(loss=loss, threshold=threshold)
+            detection = vectorized_verify_if_is_anomaly(loss=loss, threshold=threshold*threshold_factor)
             detections.append(detection)
 
         detections = np.column_stack(detections)
@@ -150,9 +148,7 @@ class AnomalyDetector:
         else:
             return 0.0
 
-    def evaluate(self, X_test:np.ndarray, Y_test:np.ndarray) -> np.ndarray:
-        detections = self.detect(dataset=X_test)
-
+    def evaluate(self, X_test:np.ndarray, Y_test:np.ndarray, detections:np.ndarray) -> np.ndarray:
         cm = confusion_matrix(y_true=Y_test, y_pred=detections)
         report = classification_report(y_true=Y_test, y_pred=detections)
         print(report)
