@@ -48,8 +48,8 @@ def start(current_dir):
     main_file_path = os.path.join(src_dir, 'main.py')
     with open(main_file_path, 'w') as main_file:
         main_file.write("import pyEasyML\n")
-        main_file.write("import os\n")
         main_file.write("from pyEasyML import Settings\n")
+        main_file.write("import os\n")
         main_file.write("settings = Settings(os.path.abspath(__file__))\n")
 
     click.echo("framework set up successfully!")
