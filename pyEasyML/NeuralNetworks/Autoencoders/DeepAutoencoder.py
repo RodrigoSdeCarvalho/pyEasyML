@@ -30,6 +30,7 @@ class DeepAutoencoder(AbstractANN):
                  layers_params:dict[str, Any],
                  encode_layers_kwargs:dict[str, Any],
                  decode_layers_kwargs:dict[str, Any],
+                 latent_space_dim:int,
                  optimizer:str="adam",
                  loss:str="mse",
                  input_layer:Input=None,
@@ -49,6 +50,7 @@ class DeepAutoencoder(AbstractANN):
                                               layers_params=layers_params,
                                               encode_layers_kwargs=encode_layers_kwargs, 
                                               decode_layers_kwargs=decode_layers_kwargs,
+                                              latent_space_dim=latent_space_dim,
                                               input_layer=input_layer,
                                               layers=layers,
                                               optimizer=optimizer,
@@ -59,6 +61,7 @@ class DeepAutoencoder(AbstractANN):
                            layers_params:dict[str, Any],
                            encode_layers_kwargs:dict[str, Any], 
                            decode_layers_kwargs:dict[str, Any],
+                           latent_space_dim:int,
                            input_layer:Input,
                            layers:DeepAutoencoderLayers,
                            optimizer:str,
@@ -70,7 +73,7 @@ class DeepAutoencoder(AbstractANN):
 
         # if the model is not found, it will be created. Gets the layers based on inputs and kwargs
         if layers is None and input_layer is None:
-            input_layer, layers = self.__get_autoencoder_layers(inputs, layers_params, encode_layers_kwargs, decode_layers_kwargs)
+            input_layer, layers = self.__get_autoencoder_layers(inputs, layers_params, encode_layers_kwargs, decode_layers_kwargs, latent_space_dim)
 
         # creates the model
         autoencoder = Sequential()
@@ -87,10 +90,12 @@ class DeepAutoencoder(AbstractANN):
 
         return autoencoder
 
-    def __get_autoencoder_layers(self, inputs:int, layers_params:dict[str, Any], encode_layers_kwargs:dict[str, Any], decode_layers_kwargs:dict[str, Any]) -> tuple[Input, DeepAutoencoderLayers]:
+    def __get_autoencoder_layers(self, inputs:int, layers_params:dict[str, Any], encode_layers_kwargs:dict[str, Any], decode_layers_kwargs:dict[str, Any], latent_space_dim:int=None) -> tuple[Input, DeepAutoencoderLayers]:
         input_shape = (inputs,)
         num_features = np.prod(input_shape)
-        latent_dim = num_features // 2
+        
+        if latent_space_dim is None:
+            latent_space_dim = num_features // 2
 
         # Input Layer
         input_layer = Input(shape=input_shape)
@@ -101,7 +106,7 @@ class DeepAutoencoder(AbstractANN):
         # Adds the encoding layers        
         units = num_features
         layer_ctr = 0
-        while units >= latent_dim:
+        while units >= latent_space_dim:
             layer_key = str(layer_ctr)
             if layer_key == '0' and layer_key in list(layers_params.keys()):
                 layers.add(units=units, **layers_params[layer_key])
