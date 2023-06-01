@@ -1,5 +1,3 @@
-# https://stackoverflow.com/questions/7139111/python-extension-methods
-
 import os, sys, re
 from typing import Any
 
@@ -15,37 +13,25 @@ os.chdir(script_dir)
 
 sys.path.append(script_dir)
 
-from Data.DataPreprocessing import DataPreprocessor
-
 class Extend:
-    def __init__(self, obj, method):
+    def __init__(self, cls, method):
         method_name = method.__name__
-        setattr(obj, method_name, method)
-        self.obj = obj
-        self.method_name = method_name
+        setattr(cls, method_name, method)
+        self.cls = cls
 
-    def __enter__(self):
-        return self.obj
+    def __call__(self, *args, **kwargs):
+        return self.cls(*args, **kwargs)
 
-    def __exit__(self, type, value, traceback):
-        delattr(self.obj, self.method_name)
-
-
-if __name__ == "__main__":    
-    def get_class_name(self):   
-        return (self._a)
-
-    def test(self):
-        return "modified test"
-
+if __name__ == "__main__":
     class C:
-        def __init__(self) -> None:
-            self._a = "a"
-            
+        def __init__(self, a) -> None:
+            self._a = a
+
         def test(self):
             return "TEST"
 
-    with Extend(C, get_class_name):
-        c = C()
-        print(c.get_class_name()) # prints 'modified test'
-        
+    def test(self):
+        return "TEST" + str(self._a)
+
+    c = Extend(C, test)(a=6)
+    print(c.test()) # TEST6
