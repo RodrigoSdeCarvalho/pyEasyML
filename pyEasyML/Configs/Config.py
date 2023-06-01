@@ -29,11 +29,11 @@ def singleton(cls):
 @singleton
 class Config():
     def __init__(self, client:str) -> None:
-        self.__configs:dict[str, str] = self.__load_configs(client)
-        self.__client:str = self.__configs['client']
-        self.__SELECTED_FEATURES:list[str] = []
-        self.__TARGET_FEATURE:str = "NOT DEFINED"
-        self.__RANDOM_STATE:int = 0
+        self._configs:dict[str, str] = self.__load_configs(client)
+        self._client:str = self._configs['client']
+        self._SELECTED_FEATURES:list[str] = []
+        self._TARGET_FEATURE:str = "NOT DEFINED"
+        self._RANDOM_STATE:int = 0
 
     def __load_configs(self, client: str) -> dict[str, str]:
         start = client
@@ -52,35 +52,35 @@ class Config():
 
     @property
     def SELECTED_FEATURES(self) -> list[str]:
-        return self.__SELECTED_FEATURES
+        return self._SELECTED_FEATURES
 
     @SELECTED_FEATURES.setter
     def SELECTED_FEATURES(self, selected_features:list[str]) -> None:
-        self.__SELECTED_FEATURES = selected_features
+        self._SELECTED_FEATURES = selected_features
 
     @property
     def TARGET_FEATURE(self) -> str:
-        return self.__TARGET_FEATURE
+        return self._TARGET_FEATURE
     
     @TARGET_FEATURE.setter
     def TARGET_FEATURE(self, target_feature:str) -> None:
-        self.__TARGET_FEATURE = target_feature
+        self._TARGET_FEATURE = target_feature
 
     @property
     def RANDOM_STATE(self) -> int:
-        return self.__RANDOM_STATE
+        return self._RANDOM_STATE
 
     def get_data_path(self) -> str:
-        return os.path.join(self.__client, 'dataset/')
+        return os.path.join(self._client, 'dataset/')
 
     def get_trained_models_path(self) -> str:
-        return os.path.join(self.__client, 'models/')
+        return os.path.join(self._client, 'models/')
 
     def get_normalization_model_path(self) -> str:
-        return os.path.join(self.__client, 'models/', 'normalizationModel/')
+        return os.path.join(self._client, 'models/', 'normalizationModel/')
 
     def get_utils_path(self) -> str:
-        return os.path.join(self.__client, 'Utils/')
+        return os.path.join(self._client, 'Utils/')
     
 
 if __name__ == '__main__':

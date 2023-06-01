@@ -19,12 +19,12 @@ from os.path import exists
 class ColumnsToID(Singleton):
     def __init__(self) -> None:
         if not super().created:
-            self.__config = Config()
-            self.__CONVERT_DF_PATH = os.path.join(self.__config.get_utils_path(), 'columnsToID.csv')
+            self._config = Config()
+            self._CONVERT_DF_PATH = os.path.join(self._config.get_utils_path(), 'columnsToID.csv')
 
     def __load(self) -> pd.DataFrame:
-        if exists(self.__CONVERT_DF_PATH):
-            return pd.read_csv(self.__CONVERT_DF_PATH, index_col=0)
+        if exists(self._CONVERT_DF_PATH):
+            return pd.read_csv(self._CONVERT_DF_PATH, index_col=0)
         else:
             return pd.DataFrame(columns=['column', 'id'])
     
@@ -36,7 +36,7 @@ class ColumnsToID(Singleton):
                 new_row = pd.DataFrame({'column': [column], 'id': [len(df)+1]})
                 df = pd.concat([df, new_row], ignore_index=True)
                 #df = df.append({'column': column, 'id': len(df)}, ignore_index=True)
-                df.to_csv(self.__CONVERT_DF_PATH)
+                df.to_csv(self._CONVERT_DF_PATH)
                 converted_columns.append(len(df) - 1)
             else:
                 column_id = df[df['column'] == column]['id'].values[0]
@@ -48,7 +48,7 @@ class ColumnsToID(Singleton):
         return hash(int(''.join([str(column) for column in converted_columns])))
 
     def get_id(self, model_name:str) -> tuple[str]:
-        models_path = self.__config.get_trained_models_path()
+        models_path = self._config.get_trained_models_path()
         trained_models = os.listdir(models_path)
 
         for trained_model in trained_models:

@@ -19,68 +19,68 @@ from os.path import exists
 
 class Threshold():
     def __init__(self, model:str, column_id:int = 0, value:float=None) -> None:
-        self.__config = Config()
-        self.__THRESHOLD_DF_PATH = os.path.join(self.__config.get_utils_path(), 'thresholds.csv')
-        self.__df = self.__load()
-        self.__model = model
-        self.__column_id = column_id
+        self._config = Config()
+        self._THRESHOLD_DF_PATH = os.path.join(self._config.get_utils_path(), 'thresholds.csv')
+        self._df = self.__load()
+        self._model = model
+        self._column_id = column_id
 
         if value is not None:
-            self.__value = value
+            self._value = value
         else:
-            self.__value = self.__get()
+            self._value = self.__get()
             
     def __load(self) -> pd.DataFrame:
-        if exists(self.__THRESHOLD_DF_PATH):
-            return pd.read_csv(self.__THRESHOLD_DF_PATH, index_col=0)
+        if exists(self._THRESHOLD_DF_PATH):
+            return pd.read_csv(self._THRESHOLD_DF_PATH, index_col=0)
         else:
             df = pd.DataFrame(columns=['model', 'column_id', 'threshold'])
-            df.to_csv(self.__THRESHOLD_DF_PATH, index=True)
+            df.to_csv(self._THRESHOLD_DF_PATH, index=True)
             return df 
 
     def __save(self) -> None:
-        self.__df.to_csv(self.__THRESHOLD_DF_PATH, index=True, index_label=False)
+        self._df.to_csv(self._THRESHOLD_DF_PATH, index=True, index_label=False)
 
     def __get(self) -> float:
-        if self.__df.empty:
+        if self._df.empty:
             return 0
         else:
-            threshold = self.__df[(self.__df['model'] == self.__model) & (self.__df['column_id'] == self.__column_id)]['threshold']
+            threshold = self._df[(self._df['model'] == self._model) & (self._df['column_id'] == self._column_id)]['threshold']
             if threshold.empty:
                 return 0
             else:
                 return threshold.values[0]
 
     def __set(self, value: float) -> None:
-        self.__df = self.__load()
+        self._df = self.__load()
         
-        df = self.__df[(self.__df['model'] == self.__model) & (self.__df['column_id'] == self.__column_id)]
+        df = self._df[(self._df['model'] == self._model) & (self._df['column_id'] == self._column_id)]
         if df.empty:
-            new_row = pd.DataFrame({'model': [self.__model], 'column_id': [self.__column_id], 'threshold': [value]})
-            self.__df = pd.concat([self.__df, new_row], ignore_index=True)
+            new_row = pd.DataFrame({'model': [self._model], 'column_id': [self._column_id], 'threshold': [value]})
+            self._df = pd.concat([self._df, new_row], ignore_index=True)
         else:
             row_index = df.index[0]
-            if self.__df.at[row_index, 'threshold'] != value:
-                self.__df.at[row_index, 'threshold'] = value
+            if self._df.at[row_index, 'threshold'] != value:
+                self._df.at[row_index, 'threshold'] = value
             else:
                 return
 
-        self.__value = value
+        self._value = value
         self.__save()
 
     def __mul__(self, value: float) -> None:
-        self.__value *= value
+        self._value *= value
         return self
 
     def __str__(self) -> str:
-        return f'Threshold: {self.__value}'
+        return f'Threshold: {self._value}'
 
     def __repr__(self) -> str:
-        return f'Threshold: {self.__value}'
+        return f'Threshold: {self._value}'
 
     @property
     def value(self) -> float:
-        return self.__value
+        return self._value
 
     @value.setter
     def value(self, value: float) -> None:
@@ -88,12 +88,12 @@ class Threshold():
 
     @property
     def column_id(self) -> int:
-        return self.__column_id
+        return self._column_id
 
     @column_id.setter
     def column_id(self, column_id: int) -> None:
-        self.__column_id = column_id
-        self.__value = self.__get()
+        self._column_id = column_id
+        self._value = self.__get()
 
 if __name__ == '__main__':
     pass

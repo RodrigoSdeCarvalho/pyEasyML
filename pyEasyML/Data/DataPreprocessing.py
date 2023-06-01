@@ -23,6 +23,8 @@ from Utils.Singleton import Singleton
 from Configs.Config import Config
 import pickle
 from os.path import exists
+from typing import Any
+import glob
 from pandas.core.indexes.base import Index as pdIndexes
 
 class DataPreprocessor(Singleton):
@@ -30,29 +32,43 @@ class DataPreprocessor(Singleton):
         if not super().created:
             self._config = Config()
             self._columns_to_id = ColumnsToID()
-            self.__DATASET_PATH:str = ""
-            self.__DATA_FOLDER_PATH:str = self._config.get_data_path()
+            self._DATASET_PATH:str = ""
+            self._DATA_FOLDER_PATH:str = self._config.get_data_path()
 
     @property
     def DATASET_PATH(self) -> str:
-        return self.__DATASET_PATH
+        return self._DATASET_PATH
 
     @DATASET_PATH.setter
     def DATASET_PATH(self, dataset_file_name:str) -> None:
-        self.__DATASET_PATH = os.path.join(self.__DATA_FOLDER_PATH, dataset_file_name)
+        self._DATASET_PATH = os.path.join(self._DATA_FOLDER_PATH, dataset_file_name)
+
+    def read_dataset(self, path: str) -> pd.DataFrame:
+        file_extension = os.path.splitext(path)[1].lower()
+    
+        if file_extension == ".csv":
+            return pd.read_csv(path)
+        elif file_extension == ".parquet":
+            return pd.read_parquet(path)
+        elif file_extension == ".xlsx":
+            return pd.read_excel(path)
+        # Add more conditions for other file formats if needed
+        else:
+            raise ValueError("Unsupported file extension: " + file_extension)    
 
     def read_all_data(self) -> pd.DataFrame:
-        all_data_path = os.path.join(self.__DATA_FOLDER_PATH, "all_data.parquet")
+        all_data_path = glob.glob(os.path.join(self._DATA_FOLDER_PATH, "all_data.*"))[0]
+
         if exists(all_data_path):
-            print("Reading all_data.parquet")
-            return pd.read_parquet(all_data_path)
+            print("Reading all_data.")
+            return self.read_dataset(all_data_path)
         else:
-            dataset_files = os.listdir(self.__DATA_FOLDER_PATH)
-            dataset_paths = [os.path.join(self.__DATA_FOLDER_PATH, dataset_file) for dataset_file in dataset_files]
+            dataset_files = os.listdir(self._DATA_FOLDER_PATH)
+            dataset_paths = [os.path.join(self._DATA_FOLDER_PATH, dataset_file) for dataset_file in dataset_files]
             
             datasets = []
             for dataset_path in dataset_paths:
-                dataset = pd.read_parquet(dataset_path)
+                dataset = self.read_dataset(dataset_path)
                 datasets.append(dataset)
             
             datasets = tuple(datasets)
@@ -70,7 +86,7 @@ class DataPreprocessor(Singleton):
         return pd.concat(datasets, ignore_index=True)
 
     def get_train_val_test_datasets(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        raw_dataset = pd.read_parquet(self.DATASET_PATH)
+        raw_dataset = self.read_dataset(self.DATASET_PATH)
         cleaned_dataset, = self.clean_dataset(raw_dataset)
 
         #Shuffle the dataframe
@@ -155,7 +171,7 @@ class DataPreprocessor(Singleton):
         return scaler
 
     def fit_standard_scaler(self, columns:list[str]) -> sklearn.preprocessing.StandardScaler:
-        raw_dataset = pd.read_parquet(self.DATASET_PATH)
+        raw_dataset = self.read_dataset(self.DATASET_PATH)
         cleaned_dataset, = self.clean_dataset(raw_dataset)
 
         cleaned_dataset = cleaned_dataset[columns]
