@@ -74,8 +74,6 @@ class DataPreprocessor(Singleton):
             datasets = tuple(datasets)
             
             dataset = self.concat_datasets(*datasets)
-
-            dataset, = self.clean_dataset(dataset)
             
             dataset.to_parquet(all_data_path)
         
@@ -87,31 +85,25 @@ class DataPreprocessor(Singleton):
 
     def get_train_val_test_datasets(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         raw_dataset = self.read_dataset(self.DATASET_PATH)
-        cleaned_dataset, = self.clean_dataset(raw_dataset)
 
         #Shuffle the dataframe
-        cleaned_dataset = cleaned_dataset.sample(frac=1, random_state=self._config.RANDOM_STATE)
+        raw_dataset = raw_dataset.sample(frac=1, random_state=self._config.RANDOM_STATE)
 
-        len_data = len(cleaned_dataset)
+        len_data = len(raw_dataset)
 
-        train_val_dataset = cleaned_dataset[:int(len_data*0.8)]
-        test_dataset = cleaned_dataset[int(len_data*0.8):]
+        train_val_dataset = raw_dataset[:int(len_data*0.8)]
+        test_dataset = raw_dataset[int(len_data*0.8):]
 
         return train_val_dataset, test_dataset
 
-    def clean_dataset(self, *dfs:pd.DataFrame) -> tuple[pd.DataFrame, ...]:
+    def clean_dataset(self, *dfs:tuple[pd.DataFrame]) -> tuple[pd.DataFrame, ...]:
         # CLEAN THE DATASET HERE.
-        aux_list = []
-        for df in dfs:
-            df = df.apply(pd.to_numeric, errors='coerce')
-            df = df.select_dtypes(include=['number'])
-            df = self.handle_missing_values(df)
-            aux_list.append(df)
-        dfs = tuple(aux_list)
 
         return dfs
 
     def handle_missing_values(self, dataset:pd.DataFrame) -> pd.DataFrame:
+        # HANDLE MISSING VALUES HERE.
+        
         X = dataset.columns.to_list()
         for x in X:
             if dataset[x].isna().all():
@@ -141,7 +133,7 @@ class DataPreprocessor(Singleton):
             X.to_numpy(), 
             Y.to_numpy(), 
             test_size=0.3, 
-            #shuffle=True, #Shuffle is already done in the clean_dataset function. 
+            shuffle=True,
             random_state=self._config.RANDOM_STATE
         )
 
@@ -172,13 +164,12 @@ class DataPreprocessor(Singleton):
 
     def fit_standard_scaler(self, columns:list[str]) -> sklearn.preprocessing.StandardScaler:
         raw_dataset = self.read_dataset(self.DATASET_PATH)
-        cleaned_dataset, = self.clean_dataset(raw_dataset)
 
-        cleaned_dataset = cleaned_dataset[columns]
-        cleaned_dataset = cleaned_dataset.to_numpy()
+        raw_dataset = raw_dataset[columns]
+        raw_dataset = raw_dataset.to_numpy()
 
         scaler = sklearn.preprocessing.StandardScaler()
-        scaler.fit(cleaned_dataset)
+        scaler.fit(raw_dataset)
 
         columns_id_str = self._columns_to_id.convert_columns_to_id(*columns)
         path = os.path.join(self._config.get_normalization_model_path(), f'scaler_{columns_id_str}.sav')
