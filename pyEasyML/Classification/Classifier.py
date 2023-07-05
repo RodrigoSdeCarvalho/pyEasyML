@@ -19,6 +19,8 @@ import pandas as pd
 import numpy as np
 from typing import Any
 from os.path import exists
+from sklearn.metrics import PrecisionRecallDisplay, precision_recall_curve, roc_curve, RocCurveDisplay, auc
+from matplotlib import pyplot as plt
 
 from Utils.ColumnsToID import ColumnsToID
 from Configs.Config import Config
@@ -155,3 +157,35 @@ class Classifier:
 
     def predict_proba(self, dataset:pd.DataFrame) -> np.ndarray:
         return self._model.predict_proba(dataset)
+
+    #TODO : IMPLEMENT
+    def cross_validate(self, dataset:pd.DataFrame, folds:int = 10) -> None:
+        return self._model.cross_validate(dataset, folds)
+    
+    #TODO : IMPLEMENT
+    def grid_search(self, dataset:pd.DataFrame, params:dict[str, Any]) -> None:
+        return self._model.grid_search(dataset, params)
+
+    #TODO : IMPLEMENT
+    def random_search(self, dataset:pd.DataFrame, params:dict[str, Any]) -> None:
+        return self._model.random_search(dataset, params)
+    
+    def plot_roc_curve(self, X_test:pd.DataFrame, Y_test:pd.DataFrame) -> None:
+        class_labels = [0, 1]  # Assuming binary classification
+        pr_data = []
+        y_scores = self._model.predict_proba(X_test)[:, 1]  # Assuming probability scores for class 1
+        precision, recall, _ = precision_recall_curve(Y_test, y_scores, pos_label=1)
+        average_precision = sum(precision) / len(class_labels)
+        average_recall = sum(recall) / len(class_labels)
+        pr_data.append((self._model.__class__.__name__, precision, recall, average_precision, average_recall))
+
+        # Plotting all Precision-Recall curves on a single figure
+        plt.figure()
+        for model_name, precision, recall, _, _ in pr_data:
+            display = PrecisionRecallDisplay(precision=precision, recall=recall)
+            display.plot(ax=plt.gca())
+
+        plt.legend([model_name for model_name, _, _, _, _ in pr_data])
+        plt.title("2-class Precision-Recall curve")
+        plt.show()
+        
