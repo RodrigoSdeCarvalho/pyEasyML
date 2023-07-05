@@ -15,3 +15,5 @@ fi
 
 # Install the package using pip
 pip3 install "$framework"
+
+twine upload dist/*

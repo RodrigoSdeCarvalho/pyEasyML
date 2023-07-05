@@ -56,6 +56,19 @@ class DataPreprocessor(Singleton):
         else:
             raise ValueError("Unsupported file extension: " + file_extension)    
 
+    def save_dataset(self, dataset:pd.DataFrame, path:str) -> None:
+        file_extension = os.path.splitext(path)[1].lower()
+    
+        if file_extension == ".csv":
+            dataset.to_csv(path, index=False)
+        elif file_extension == ".parquet":
+            dataset.to_parquet(path, index=False)
+        elif file_extension == ".xlsx":
+            dataset.to_excel(path, index=False)
+        # Add more conditions for other file formats if needed
+        else:
+            raise ValueError("Unsupported file extension: " + file_extension)   
+
     def read_all_data(self) -> pd.DataFrame:
         all_data_path = glob.glob(os.path.join(self._DATA_FOLDER_PATH, "all_data.*"))[0]
 
