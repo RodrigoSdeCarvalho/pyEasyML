@@ -65,7 +65,7 @@ class Classifier(AbstractModelDecorator):
 
     def run_cross_validation(self, X_train: np.ndarray, Y_train: np.ndarray, cv: int = 3) -> None:
         return self._model.run_cross_validation(X_train, Y_train, cv)
-    
+
     #TODO : IMPLEMENT
     def grid_search(self, dataset:pd.DataFrame, params:dict[str, Any]) -> None:
         return self._model.grid_search(dataset, params)
@@ -73,7 +73,7 @@ class Classifier(AbstractModelDecorator):
     #TODO : IMPLEMENT
     def random_search(self, dataset:pd.DataFrame, params:dict[str, Any]) -> None:
         return self._model.random_search(dataset, params)
-    
+
     def plot_roc_curve(self, X_test:pd.DataFrame, Y_test:pd.DataFrame) -> None:
         class_labels = [0, 1]  # Assuming binary classification
         pr_data = []
