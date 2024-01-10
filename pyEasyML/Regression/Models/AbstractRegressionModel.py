@@ -44,8 +44,8 @@ class AbstractRegressionModel(AbstractModel, ABC):
             "r2": metrics.r2_score(Y_test, Y_pred)
         }
 
-    def run_cross_validation(self, X_train, Y_train, results_path: str = None):
-        scores = cross_validate(self._model, X_train, Y_train, cv=3,
+    def run_cross_validation(self, X_train, Y_train, cv: int = 3, results_path: str = None):
+        scores = cross_validate(self._model, X_train, Y_train, cv,
                                 scoring=["neg_mean_absolute_error", "neg_root_mean_squared_error",
                                          "max_error", "r2", "neg_mean_absolute_percentage_error"])
 

@@ -63,6 +63,11 @@ class Regressor(AbstractModelDecorator):
         """
         super().__init__(model_name, columns, target, default_columns, default_target, **model_params)
 
-    #TODO : IMPLEMENT
-    def cross_validate(self, dataset:pd.DataFrame, folds:int = 10) -> None:
-        return self._model.cross_validate(dataset, folds)
+    def run_cross_validation(self, X_train, Y_train, cv: int = 3, results_path: str = None) -> None:
+        self._model.cross_validate(X_train, Y_train, cv, results_path)
+
+    def plot_regression_scores(self, Y_test, Y_pred,
+                               savefig: bool = False,
+                               fig_path: str = "",
+                               plot: bool = True):
+        self._model.plot_regression_scores(Y_test, Y_pred, savefig, fig_path, plot)

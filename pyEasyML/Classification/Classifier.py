@@ -63,9 +63,8 @@ class Classifier(AbstractModelDecorator):
         """
         super().__init__(model_name, columns, target, default_columns, default_target, **model_params)
 
-    #TODO : IMPLEMENT
-    def cross_validate(self, dataset:pd.DataFrame, folds:int = 10) -> None:
-        return self._model.cross_validate(dataset, folds)
+    def run_cross_validation(self, X_train: np.ndarray, Y_train: np.ndarray, cv: int = 3) -> None:
+        return self._model.run_cross_validation(X_train, Y_train, cv)
     
     #TODO : IMPLEMENT
     def grid_search(self, dataset:pd.DataFrame, params:dict[str, Any]) -> None:
