@@ -1,17 +1,4 @@
-import os, sys, re
 
-# Evitando a criação de arquivos .pyc
-sys.dont_write_bytecode = True
-
-script_dir = os.path.abspath(__file__)
-
-
-# Apagando o nome do arquivo e deixando apenas o diretorio.
-script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
-
-os.chdir(script_dir)
-
-sys.path.append(script_dir)
 
 import numpy as np
 from os.path import exists
@@ -26,10 +13,10 @@ class IsolationForest(AbstractClassificationModel):
     """Um modelo de classificação que utiliza o algoritmo IsolationForest. 
     Classifica os dados como outliers ou normais, sendo a classe normal a classe dominante.
     """
-    def __init__(self, dominant_class:str = 'normal', unbalance_coeficient:float=0.4, columns:list[str]=DataPreprocessor.CLASSIFICATION_VAR_LIST) -> None:
+    def __init__(self, dominant_class:str = 'normal', unbalance_coeficient:float=0.4, columns:list[str]=DataPreprocessor.CLASSIFICATION_VAR_LIST, **kwargs) -> None:
         self.__dominant_class = dominant_class
         self.__unbalance_coeficient = unbalance_coeficient
-        super().__init__(columns=columns)
+        super().__init__(columns=columns, **kwargs)
 
     def _instantiate_model(self) -> IF:
         return IF(contamination=self.__unbalance_coeficient, random_state=Definitions.random_state)

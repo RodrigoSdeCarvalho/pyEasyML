@@ -1,19 +1,4 @@
-import os, sys, re
 
-# Evitando a criação de arquivos .pyc
-sys.dont_write_bytecode = True
-
-script_dir = os.path.abspath(__file__)
-
-
-# Apagando o nome do arquivo e deixando apenas o diretorio.
-script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
-
-script_dir = os.path.abspath(script_dir)
-
-os.chdir(script_dir)
-
-sys.path.append(os.path.join(script_dir))
 
 from abc import ABC, abstractmethod
 import pandas as pd
@@ -32,14 +17,14 @@ class AbstractModel(ABC):
     A interface provavelmente será mantida para modelos da biblioteca sklearn.
     Ao importar o modelo da sklearn, recomenda-se que usa um alias, para evitar conflitos de nomes na IDE.
     """
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         self._config = Config()
         self._columns_to_id = ColumnsToID()
 
         self._columns = None # Will both be set in the constructor of the Classifier class.
         self._target = None
 
-        self._model = self._instantiate_model()
+        self._model = self._instantiate_model(**kwargs)
 
     @property
     def model(self) -> Any:

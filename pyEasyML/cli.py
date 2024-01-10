@@ -42,7 +42,6 @@ def start(current_dir):
         main_file.write("#  Main file entrypoint header: Don't change or delete\n")
         main_file.write("from pyEasyML.add_module import add_pyEasyML_module\n")
         main_file.write("add_pyEasyML_module()\n")
-        main_file.write("import pyEasyML\n")
         main_file.write("from pyEasyML import Settings\n")
         main_file.write("import os\n")
         main_file.write("settings = Settings(os.path.abspath(__file__))\n")
