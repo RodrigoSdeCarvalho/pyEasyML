@@ -18,7 +18,7 @@ sys.path.append(os.path.join(script_dir))
 from typing import Any
 
 # Created models will be imported here.
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel as AbstractModel
 
 from Classification.Models.SVC import SVC
 from Classification.Models.XGBClassifier import XGBClassifier
@@ -26,25 +26,14 @@ from Classification.Models.KMeans import KMeans
 from Classification.Models.LogisticRegression import LogisticRegression
 from Classification.Models.GradientBoostingClassifier import GradientBoostingClassifier
 
-# Import of Singleton
-from Utils.Singleton import Singleton
+from Utils.Factory import Factory as BaseFactory
 
-class Factory(Singleton):
-    def __init__(self) -> None:
-        if not super().created:
-            self._models:dict[str, AbstractModel] = {
-                "SVC": SVC,
-                "XGBClassifier": XGBClassifier,
-                "KMeans": KMeans,
-                "LogisticRegression": LogisticRegression,
-                "GradientBoostingClassifier": GradientBoostingClassifier
-            }
 
-    def create(self, model_name:str, **params:dict[str, Any]) -> AbstractModel:
-        if model_name not in self._models:
-            print(f"Modelo {model_name} não encontrado.")
-            raise KeyError(f"Modelo {model_name} não encontrado.")
-
-        model = self._models[model_name]
-
-        return model(**params)
+class Factory(BaseFactory):
+    _models:dict[str, AbstractModel] = {
+        "SVC": SVC,
+        "XGBClassifier": XGBClassifier,
+        "KMeans": KMeans,
+        "LogisticRegression": LogisticRegression,
+        "GradientBoostingClassifier": GradientBoostingClassifier
+    }

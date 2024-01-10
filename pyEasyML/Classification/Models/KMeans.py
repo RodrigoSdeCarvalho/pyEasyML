@@ -16,11 +16,12 @@ sys.path.append(script_dir)
 import numpy as np
 import pandas as pd
 from Configs.Config import Config
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 from sklearn.cluster import KMeans as km
 from typing import Any
 
-class KMeans(AbstractModel):
+
+class KMeans(AbstractClassificationModel):
     def __init__(self) -> None:
         super().__init__()
 

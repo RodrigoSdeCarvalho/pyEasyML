@@ -18,8 +18,11 @@ from os.path import exists
 from Utils import Definitions
 from Data.DataPreprocessing import DataPreprocessor
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.ensemble import IsolationForest as IF
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 
-class IsolationForest(Model):
+
+class IsolationForest(AbstractClassificationModel):
     """Um modelo de classificação que utiliza o algoritmo IsolationForest. 
     Classifica os dados como outliers ou normais, sendo a classe normal a classe dominante.
     """

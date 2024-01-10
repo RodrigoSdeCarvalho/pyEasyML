@@ -13,11 +13,12 @@ os.chdir(script_dir)
 
 sys.path.append(script_dir)
 
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-class KNeighborsClassifier(AbstractModel):
+
+class KNeighborsClassifier(AbstractClassificationModel):
     def __init__(self) -> None:
         super().__init__()
 

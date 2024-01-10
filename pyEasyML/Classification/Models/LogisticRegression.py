@@ -16,10 +16,11 @@ sys.path.append(script_dir)
 import numpy as np
 from os.path import exists
 from typing import Any
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 from sklearn.linear_model import LogisticRegression as lr
 
-class LogisticRegression(AbstractModel):
+
+class LogisticRegression(AbstractClassificationModel):
     def __init__(self) -> None:
         super().__init__()
 

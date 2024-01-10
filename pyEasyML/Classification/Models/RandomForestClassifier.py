@@ -13,11 +13,12 @@ os.chdir(script_dir)
 
 sys.path.append(script_dir)
 
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 from sklearn.ensemble import RandomForestClassifier as RFC
 from typing import Any
 
-class RandomForestClassifier(AbstractModel):
+
+class RandomForestClassifier(AbstractClassificationModel):
     def __init__(self) -> None:
         super().__init__()
 

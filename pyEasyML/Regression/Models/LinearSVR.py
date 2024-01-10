@@ -16,18 +16,15 @@ os.chdir(script_dir)
 sys.path.append(os.path.join(script_dir))
 
 from typing import Any
-from xgboost.sklearn import XGBClassifier as xgb
-from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
+from sklearn.svm import LinearSVR as lsvr
+from Regression.Models.AbstractRegressionModel import AbstractRegressionModel
 
 
-class XGBClassifier(AbstractClassificationModel):
+class LinearSVR(AbstractRegressionModel):
     def __init__(self) -> None:
         super().__init__()
 
-    def _instantiate_model(self, **params:dict[str, Any]) -> xgb:
-        xgb_model = xgb(**params)
+    def _instantiate_model(self, **params:dict[str, Any]) -> lsvr:
+        lsvr_model = lsvr(**params)
 
-        return xgb_model
-
-    def _get_params(self, deep:bool = True) -> dict:
-        return self._model.get_params(deep=deep)
+        return lsvr_model

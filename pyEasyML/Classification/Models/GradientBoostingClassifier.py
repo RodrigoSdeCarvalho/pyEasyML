@@ -16,10 +16,10 @@ os.chdir(script_dir)
 sys.path.append(os.path.join(script_dir))
 
 from typing import Any
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 from sklearn.ensemble import GradientBoostingClassifier as gbc
 
-class GradientBoostingClassifier(AbstractModel):
+class GradientBoostingClassifier(AbstractClassificationModel):
     def __init__(self, **params:dict[str, Any]) -> None:
         super().__init__()
 

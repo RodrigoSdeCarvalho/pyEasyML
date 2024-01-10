@@ -36,6 +36,10 @@ class DataPreprocessor(Singleton):
             self._DATA_FOLDER_PATH:str = self._config.get_data_path()
 
     @property
+    def DATA_FOLDER_PATH(self) -> str:
+        return self._DATA_FOLDER_PATH
+
+    @property
     def DATASET_PATH(self) -> str:
         return self._DATASET_PATH
 
@@ -96,11 +100,12 @@ class DataPreprocessor(Singleton):
 
         return pd.concat(datasets, ignore_index=True)
 
-    def get_train_val_test_datasets(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def get_train_val_test_datasets(self, shuffle: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         raw_dataset = self.read_dataset(self.DATASET_PATH)
 
         #Shuffle the dataframe
-        raw_dataset = raw_dataset.sample(frac=1, random_state=self._config.RANDOM_STATE)
+        if shuffle:
+            raw_dataset = raw_dataset.sample(frac=1, random_state=self._config.RANDOM_STATE)
 
         len_data = len(raw_dataset)
 
@@ -126,7 +131,7 @@ class DataPreprocessor(Singleton):
 
         return dataset
 
-    def gen_train_test_datasets(self, dataset:pd.DataFrame, columns:pdIndexes = None, target_column = None) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def gen_train_test_datasets(self, dataset:pd.DataFrame, columns:pdIndexes = None, target_column = None, shuffle: bool = True) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         if columns is None:
             columns = self._config.SELECTED_FEATURES
         else:
@@ -146,7 +151,7 @@ class DataPreprocessor(Singleton):
             X.to_numpy(), 
             Y.to_numpy(), 
             test_size=0.3, 
-            shuffle=True,
+            shuffle=shuffle,
             random_state=self._config.RANDOM_STATE
         )
 
