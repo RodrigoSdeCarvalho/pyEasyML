@@ -1,25 +1,13 @@
-import os, sys, re
-
-# Evitando a criação de arquivos .pyc
-sys.dont_write_bytecode = True
-
-script_dir = os.path.abspath(__file__)
 
 
-# Apagando o nome do arquivo e deixando apenas o diretorio.
-script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
-
-os.chdir(script_dir)
-
-sys.path.append(script_dir)
-
-from Classification.Models.AbstractModel import AbstractModel
+from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
 from sklearn.ensemble import RandomForestClassifier as RFC
 from typing import Any
 
-class RandomForestClassifier(AbstractModel):
-    def __init__(self) -> None:
-        super().__init__()
+
+class RandomForestClassifier(AbstractClassificationModel):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
     def _instantiate_model(self, **params:dict[str, Any]) -> RFC:
         rf_model = RFC(**params)

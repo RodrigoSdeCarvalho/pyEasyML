@@ -1,11 +1,11 @@
 
 
 from typing import Any
-from xgboost.sklearn import XGBClassifier as xgb
-from Classification.Models.AbstractClassificationModel import AbstractClassificationModel
+from xgboost import XGBRegressor as xgb
+from Regression.Models.AbstractRegressionModel import AbstractRegressionModel
 
 
-class XGBClassifier(AbstractClassificationModel):
+class XGBRegressor(AbstractRegressionModel):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 

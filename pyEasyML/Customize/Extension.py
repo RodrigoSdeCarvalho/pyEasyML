@@ -1,51 +1,82 @@
-# https://stackoverflow.com/questions/7139111/python-extension-methods
-
 import os, sys, re
-from typing import Any
 
 # Evitando a criação de arquivos .pyc
 sys.dont_write_bytecode = True
 
-script_dir = os.path.abspath(__file__)
-
-# Apagando o nome do arquivo e deixando apenas o diretorio.
-script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
-
-os.chdir(script_dir)
-
-sys.path.append(script_dir)
-
-from Data.DataPreprocessing import DataPreprocessor
+from typing import Any
+import types
 
 class Extend:
-    def __init__(self, obj, method):
+    def __init__(self, cls, method):
         method_name = method.__name__
-        setattr(obj, method_name, method)
-        self.obj = obj
-        self.method_name = method_name
 
-    def __enter__(self):
-        return self.obj
+        self._previous_method = getattr(cls, method_name, False)
+        
+        self._cls = cls
+        self._cls_copy = types.new_class(cls.__name__, bases=(cls,))
 
-    def __exit__(self, type, value, traceback):
-        delattr(self.obj, self.method_name)
+        self._method_name = method_name
+        self._method = method
 
+        setattr(self._cls_copy, method_name, method)
 
-if __name__ == "__main__":    
-    def get_class_name(self):   
-        return (self._a)
+    def __call__(self, *args, **kwargs) -> Any:
+        """Triggered when the object is called.
 
-    def test(self):
-        return "modified test"
+        Returns:
+            Any: Any object of any class that was inputed to the Extension.
+        """
+        return self._cls_copy(*args, **kwargs)
 
+    def __enter__(self) -> Any:
+        """Triggered when the object is entered. As in with statement.
+
+        Returns:
+            Any: Any object of any class that was inputed to the Extension.
+        """
+        setattr(self._cls, self._method_name, self._method)
+        return self._cls
+
+    def __exit__(self, type, value, traceback) -> None:
+        """called when exiting the with statement.
+            When exiting the with statement, a overwritten method is returned to the original state.
+            And an added method is removed.
+        """
+        if self._previous_method:
+            setattr(self._cls, self._method_name, self._previous_method)
+        else:
+            delattr(self._cls, self._method_name)
+
+    @staticmethod
+    def object(obj, method):
+        cls = obj.__class__
+        cls_copy = types.new_class(cls.__name__, bases=(cls,))
+        setattr(cls_copy, method.__name__, method)
+
+        return cls_copy(*obj.__dict__.values())
+
+if __name__ == "__main__":
     class C:
-        def __init__(self) -> None:
-            self._a = "a"
-            
+        def __init__(self, a) -> None:
+            self._a = a
+
         def test(self):
             return "TEST"
 
-    with Extend(C, get_class_name):
-        c = C()
-        print(c.get_class_name()) # prints 'modified test'
-        
+    def test(self):
+        return "TEST" + str(self._a)
+
+    c = C(6)
+    with Extend(C, test):
+        print(c.test()) # TEST6
+    print(c.test()) # TEST
+
+    c = Extend(C, test)(6)
+    print(c.test()) # TEST6
+
+    print(C(6).test()) # TEST
+    
+    a = C(15)
+    a = Extend.object(a, test)
+    print(a.test()) # TEST6
+    print(C(6).test()) # TEST

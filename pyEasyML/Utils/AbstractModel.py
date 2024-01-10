@@ -1,19 +1,4 @@
-import os, sys, re
 
-# Evitando a criação de arquivos .pyc
-sys.dont_write_bytecode = True
-
-script_dir = os.path.abspath(__file__)
-
-
-# Apagando o nome do arquivo e deixando apenas o diretorio.
-script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
-
-script_dir = os.path.abspath(script_dir)
-
-os.chdir(script_dir)
-
-sys.path.append(os.path.join(script_dir))
 
 from abc import ABC, abstractmethod
 import pandas as pd
@@ -22,24 +7,24 @@ from Utils.ColumnsToID import ColumnsToID
 from Configs.Config import Config
 from os.path import exists
 from typing import Any
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import numpy as np
+
 
 class AbstractModel(ABC):
     """
-    Classe abstrata que define o modelo de classificação a ser utilizado.
+    Classe abstrata que define o modelo de regressão a ser utilizado.
     O nome da classe deve ser o mesmo nome da classe do modelo a ser utilizado.
     A interface provavelmente será mantida para modelos da biblioteca sklearn.
     Ao importar o modelo da sklearn, recomenda-se que usa um alias, para evitar conflitos de nomes na IDE.
     """
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         self._config = Config()
         self._columns_to_id = ColumnsToID()
 
         self._columns = None # Will both be set in the constructor of the Classifier class.
         self._target = None
 
-        self._model = self._instantiate_model()
+        self._model = self._instantiate_model(**kwargs)
 
     @property
     def model(self) -> Any:
@@ -48,7 +33,7 @@ class AbstractModel(ABC):
     @property
     def columns(self) -> list[str]:
         return self._columns
-    
+
     @columns.setter
     def columns(self, columns:list[str]) -> None:
         self._columns = columns
@@ -111,11 +96,6 @@ class AbstractModel(ABC):
 
         return loaded_model
 
+    @abstractmethod
     def evaluate(self, X_test:pd.DataFrame, Y_test:pd.DataFrame) -> np.ndarray:
-        predictions = self._load_model().predict(X_test)
- 
-        cm = confusion_matrix(Y_test, predictions)
-        report = classification_report(Y_test, predictions)
-        print(report)
-
-        return cm
+        pass
