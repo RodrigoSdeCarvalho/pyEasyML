@@ -19,7 +19,6 @@ import pandas as pd
 import numpy as np
 import sklearn.model_selection, sklearn.preprocessing
 from Utils.ColumnsToID import ColumnsToID 
-from Utils.Singleton import Singleton
 from Configs.Config import Config
 import pickle
 from os.path import exists
@@ -29,11 +28,10 @@ from pandas.core.indexes.base import Index as pdIndexes
 
 class DataPreprocessor(Singleton):
     def __init__(self) -> None:
-        if not super().created:
-            self._config = Config()
-            self._columns_to_id = ColumnsToID()
-            self._DATASET_PATH:str = ""
-            self._DATA_FOLDER_PATH:str = self._config.get_data_path()
+        self._config = Config()
+        self._columns_to_id = ColumnsToID()
+        self._DATASET_PATH:str = ""
+        self._DATA_FOLDER_PATH:str = self._config.get_data_path()
 
     @property
     def DATA_FOLDER_PATH(self) -> str:

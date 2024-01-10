@@ -25,7 +25,7 @@ from Utils.AbstractModelDecorator import AbstractModelDecorator
 from Utils.ColumnsToID import ColumnsToID
 from Configs.Config import Config
 
-from Regression.Models.AbstracRegressiontModel import AbstracRegressiontModel
+from Regression.Models.AbstractRegressionModel import AbstractRegressionModel
 from Regression.Factory import Factory
 
 
@@ -64,7 +64,7 @@ class Regressor(AbstractModelDecorator):
         super().__init__(model_name, columns, target, default_columns, default_target, **model_params)
 
     def run_cross_validation(self, X_train, Y_train, cv: int = 3, results_path: str = None) -> None:
-        self._model.cross_validate(X_train, Y_train, cv, results_path)
+        self._model.run_cross_validation(X_train, Y_train, cv, results_path)
 
     def plot_regression_scores(self, Y_test, Y_pred,
                                savefig: bool = False,
