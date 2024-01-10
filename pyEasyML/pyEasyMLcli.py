@@ -47,6 +47,8 @@ def start(current_dir):
     # Create main file
     main_file_path = os.path.join(src_dir, 'main.py')
     with open(main_file_path, 'w') as main_file:
+        main_file.write("from pyEasyML.add_module import add_pyEasyML_module\n")
+        main_file.write("add_pyEasyML_module()\n")
         main_file.write("import pyEasyML\n")
         main_file.write("from pyEasyML import Settings\n")
         main_file.write("import os\n")

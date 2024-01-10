@@ -45,23 +45,32 @@ class AbstractRegressionModel(AbstractModel, ABC):
         }
 
     def run_cross_validation(self, X_train, Y_train, cv: int = 3, results_path: str = None):
-        scores = cross_validate(self._model, X_train, Y_train, cv,
+        scores = cross_validate(estimator=self._model,
+                                X=X_train,
+                                y=Y_train,
+                                cv=cv,
                                 scoring=["neg_mean_absolute_error", "neg_root_mean_squared_error",
                                          "max_error", "r2", "neg_mean_absolute_percentage_error"])
 
-        results = {
-            "mae": -scores["test_neg_mean_absolute_error"],
-            "mse": -scores["test_neg_root_mean_squared_error"],
-            "maxerror": scores["test_max_error"],
-            "r2": scores["test_r2"],
-            "mape": -scores["test_neg_mean_absolute_percentage_error"],
-        }
+        mae = -scores["test_neg_mean_absolute_error"]
+        mse = -scores["test_neg_root_mean_squared_error"]
+        max_error = scores["test_max_error"]
+        r2 = scores["test_r2"]
+        mape = -scores["test_neg_mean_absolute_percentage_error"]
 
-        print("MAE:", results["mae"])
-        print("MSE", results["mse"])
-        print("Max error:", results["maxerror"])
-        print("R2", results["r2"])
-        print("MAPE", results["mape"])
+        print("MAE:", mae)
+        print("MSE:", mse)
+        print("Max error:", max_error)
+        print("R2:", r2)
+        print("MAPE:", mape)
+
+        results = {
+            "mae": -scores["test_neg_mean_absolute_error"].mean(),
+            "mse": -scores["test_neg_root_mean_squared_error"].mean(),
+            "max_error": scores["test_max_error"].mean(),
+            "r2": scores["test_r2"].mean(),
+            "mape": -scores["test_neg_mean_absolute_percentage_error"].mean(),
+        }
 
         if results_path is not None:
             json.dump(results, open(results_path, "w"))

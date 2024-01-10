@@ -26,7 +26,8 @@ from typing import Any
 import glob
 from pandas.core.indexes.base import Index as pdIndexes
 
-class DataPreprocessor(Singleton):
+
+class DataPreprocessor:
     def __init__(self) -> None:
         self._config = Config()
         self._columns_to_id = ColumnsToID()
