@@ -13,6 +13,7 @@ os.chdir(script_dir)
 
 sys.path.append(script_dir + 'src')
 
+
 class Singleton(object):
     __instance = None
     __created = False
@@ -29,3 +30,14 @@ class Singleton(object):
             return False
         else:
             return True
+
+
+def singleton(cls):
+    instances = {}
+
+    def wrapper(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+
+    return wrapper

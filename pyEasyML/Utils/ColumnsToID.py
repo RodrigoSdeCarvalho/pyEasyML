@@ -12,15 +12,16 @@ os.chdir(script_dir)
 sys.path.append(script_dir)
 
 import pandas as pd
-from Utils.Singleton import Singleton
+from Utils.Singleton import singleton
 from Configs.Config import Config
 from os.path import exists
 
-class ColumnsToID(Singleton):
+
+@singleton
+class ColumnsToID:
     def __init__(self) -> None:
-        if not super().created:
-            self._config = Config()
-            self._CONVERT_DF_PATH = os.path.join(self._config.get_utils_path(), 'columnsToID.csv')
+        self._config = Config()
+        self._CONVERT_DF_PATH = os.path.join(self._config.get_utils_path(), 'columnsToID.csv')
 
     def __load(self) -> pd.DataFrame:
         if exists(self._CONVERT_DF_PATH):

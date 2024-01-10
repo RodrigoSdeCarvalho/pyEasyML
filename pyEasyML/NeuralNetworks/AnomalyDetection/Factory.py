@@ -5,9 +5,8 @@ sys.dont_write_bytecode = True
 
 script_dir = os.path.abspath(__file__)
 
-
 # Apagando o nome do arquivo e deixando apenas o diretorio.
-script_dir = re.sub(pattern="pyEasyML.*", repl = "pyEasyML/", string = script_dir)
+script_dir = re.sub(pattern="pyEasyML.*", repl="pyEasyML/", string=script_dir)
 
 script_dir = os.path.abspath(script_dir)
 
@@ -22,16 +21,17 @@ from NeuralNetworks.AbstractANN import AbstractANN
 from NeuralNetworks.Autoencoders.DeepAutoencoder import DeepAutoencoder
 
 # Import of Singleton
-from Utils.Singleton import Singleton
+from Utils.Singleton import singleton
 
-class Factory(Singleton):
+
+@singleton
+class Factory:
     def __init__(self) -> None:
-        if not super().created:
-            self._models:dict[str, AbstractANN] = {
-                "DeepAutoencoder": DeepAutoencoder
-            }
+        self._models: dict[str, AbstractANN] = {
+            "DeepAutoencoder": DeepAutoencoder
+        }
 
-    def create(self, model_name:str, **params:dict[str, Any]) -> AbstractANN:
+    def create(self, model_name: str, **params: dict[str, Any]) -> AbstractANN:
         if model_name not in self._models:
             print(f"Modelo {model_name} não encontrado.")
             raise KeyError(f"Modelo {model_name} não encontrado.")

@@ -1,4 +1,3 @@
-
 # Evitando a criação de arquivos .pyc
 import sys
 sys.dont_write_bytecode = True
@@ -39,7 +38,7 @@ def start(current_dir):
     config_file_path = os.path.join(current_dir, proj_name, 'configs.json')
     with open(config_file_path, 'w') as config_file:
         json.dump(config_data, config_file, indent=4)
-    
+
     # Create src folder
     src_dir = os.path.join(current_dir, proj_name, 'src')
     os.makedirs(src_dir, exist_ok=True)
@@ -47,6 +46,7 @@ def start(current_dir):
     # Create main file
     main_file_path = os.path.join(src_dir, 'main.py')
     with open(main_file_path, 'w') as main_file:
+        main_file.write("#  Main file entrypoint header: Don't change or delete\n")
         main_file.write("from pyEasyML.add_module import add_pyEasyML_module\n")
         main_file.write("add_pyEasyML_module()\n")
         main_file.write("import pyEasyML\n")
