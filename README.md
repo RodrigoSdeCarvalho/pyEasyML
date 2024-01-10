@@ -8,7 +8,9 @@ pip install pyEasyML
 
 # Use
 In the root of your project, run:
+
 alias pyEasyML-start='python3 -c "import pyEasyML.cli; pyEasyML.cli.main(\"$PWD\", \"start\")"'
+
 pyEasyML-start [folder_name]
 
 [https://pypi.org/project/pyEasyML/](https://pypi.org/project/pyEasyML/)
