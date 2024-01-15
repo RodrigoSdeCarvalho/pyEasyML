@@ -70,23 +70,23 @@ class AbstractRegressionModel(AbstractModel, ABC):
 
         fig.tight_layout()
 
-        axes[0].plot(Y_test, label="Real Consume")
-        axes[0].plot(Y_pred, label="Predicted Consume")
+        axes[0].plot(Y_test, label="Real Torque")
+        axes[0].plot(Y_pred, label="Predicted Torque")
         axes[0].legend()
         axes[0].set_title("Test vs. prediction comparison by timestamp")
         axes[0].set_xlabel("Time (s)")
-        axes[0].set_ylabel("Fuel Consumption (l/h)")
+        axes[0].set_ylabel("Torque")
 
         axes[1].plot(error)
         axes[1].set_title("Error by timestamp")
         axes[1].set_xlabel("Time (s)")
-        axes[1].set_ylabel("Fuel Consumption (l/h)")
+        axes[1].set_ylabel("Torque")
 
         axes[2].scatter(Y_test, Y_pred)
         axes[2].plot(Y_test, Y_test, color="red")
         axes[2].set_title("Test vs. Prediction by test values")
-        axes[2].set_xlabel("Test Fuel Consumption ($(l/h)2$)")
-        axes[2].set_ylabel("Predicted Fuel Consumption ($(l/h)2$)")
+        axes[2].set_xlabel("Test Torque")
+        axes[2].set_ylabel("Predicted Torque)")
 
         fig.suptitle(f"Regression scores")
 

@@ -2,18 +2,26 @@ from Configs.Config import Config
 
 
 class Settings:
-    def __init__(self, client:str) -> None:
+    def __init__(self, client: str) -> None:
         self._config = Config(client)
 
-    def set_target_feature(self,target_feature:str) -> None:
+    def set_target_feature(self, target_feature: str) -> None:
         config = self._config
         config.TARGET_FEATURE = target_feature
 
-    def set_selected_features(self,selected_features:list[str]) -> None:
+    def set_selected_features(self, selected_features: list[str]) -> None:
         config = self._config
         config.SELECTED_FEATURES = selected_features
 
-    def set_random_state(self,random_state:int) -> None:
+    def add_feature(self, feature: str) -> None:
+        config = self._config
+        config.SELECTED_FEATURES.append(feature)
+
+    def remove_feature(self, feature: str) -> None:
+        config = self._config
+        config.SELECTED_FEATURES.remove(feature)
+
+    def set_random_state(self, random_state: int) -> None:
         config = self._config
         config.RANDOM_STATE = random_state
 
